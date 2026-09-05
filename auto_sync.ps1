@@ -35,33 +35,33 @@ function Sync-ToGitHub {
 
         git add -A
         $commitMsg = "Auto-sync: $timestamp - updated files"
-        git commit -m $commitMsg
+        git commit -m "$commitMsg"
 
         Write-Host "[$timestamp] Pushing to GitHub (main)..." -ForegroundColor Cyan
-        $pushOutput = git push -u origin main 2>&1
+        $pushOutput = git push origin main 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[$timestamp] Successfully synced to GitHub!" -ForegroundColor Green
         } else {
             Write-Host "[$timestamp] Push encountered an issue: $pushOutput" -ForegroundColor Red
             Write-Host "Attempting pull with rebase then push..." -ForegroundColor Yellow
             git pull --rebase origin main
-            git push -u origin main
+            git push origin main
         }
     }
 }
 
 # Initial check & sync on launch
-Sync-ToGitHub "Initial check on startup"
+Sync-ToGitHub -Reason "Initial check on startup"
 
-Write-Host "`n[✓] Watcher is actively running in real-time." -ForegroundColor Green
-Write-Host "Any file/folder created, edited, or deleted will be uploaded automatically." -ForegroundColor Cyan
-Write-Host "Press Ctrl+C to stop syncing.`n" -ForegroundColor DarkGray
+Write-Host "`n[OK] Watcher is actively running in real-time." -ForegroundColor Green
+Write-Host "Any file or folder created, edited, or deleted will be uploaded automatically." -ForegroundColor Cyan
+Write-Host "Keep this window open while working. Press Ctrl+C to stop.`n" -ForegroundColor DarkGray
 
 # Real-time monitoring loop (checks every 4 seconds)
 while ($true) {
     Start-Sleep -Seconds 4
     $status = git status --porcelain
     if (-not [string]::IsNullOrWhiteSpace($status)) {
-        Sync-ToGitHub "Change detected"
+        Sync-ToGitHub -Reason "Change detected"
     }
 }
