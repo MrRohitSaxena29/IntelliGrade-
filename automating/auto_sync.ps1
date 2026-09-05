@@ -3,7 +3,14 @@
 # Automatically commits and pushes whenever files/folders are modified
 # =====================================================================
 
-$RepoPath = $PSScriptRoot
+$ScriptDir = $PSScriptRoot
+# Locate the repository root (parent folder if placed inside 'automating')
+$gitRoot = git rev-parse --show-toplevel 2>$null
+if ($gitRoot) {
+    $RepoPath = $gitRoot
+} else {
+    $RepoPath = (Resolve-Path "$ScriptDir\..").Path
+}
 Set-Location $RepoPath
 
 Write-Host "=========================================" -ForegroundColor Cyan
