@@ -1,0 +1,9 @@
+# Ignore token and secrets
+token.txt
+*.log
+
+# OS / Editor files
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
