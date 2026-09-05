@@ -14,15 +14,8 @@ Write-Host "Monitoring folder: $RepoPath" -ForegroundColor Gray
 # Ensure remote is configured
 $remoteUrl = git remote get-url origin 2>$null
 if (-not $remoteUrl) {
-    if (Test-Path "$RepoPath\token.txt") {
-        $token = (Get-Content "$RepoPath\token.txt").Trim()
-        $authUrl = "https://$($token)@github.com/MrRohitSaxena29/IntelliGrade.git"
-        git remote add origin $authUrl
-        Write-Host "[+] Configured git remote origin with GitHub token." -ForegroundColor Green
-    } else {
-        git remote add origin "https://github.com/MrRohitSaxena29/IntelliGrade.git"
-        Write-Host "[+] Configured git remote origin." -ForegroundColor Green
-    }
+    git remote add origin "https://github.com/MrRohitSaxena29/IntelliGrade-.git"
+    Write-Host "[+] Configured git remote origin." -ForegroundColor Green
 }
 
 # Ensure main branch is set
