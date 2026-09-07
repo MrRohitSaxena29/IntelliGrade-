@@ -38,10 +38,24 @@ export interface Student {
   grade_section: string;
 }
 
+export interface FacultyMember {
+  faculty_id: string;
+  name: string;
+  email: string;
+  department: 'Physics' | 'Chemistry' | 'Mathematics' | 'Foundation Science' | 'Social Science' | 'English';
+  classes_assigned: string[];
+  role_title: string;
+  sheets_graded_count: number;
+  accuracy_rate: number;
+  avatar_url: string;
+  status: 'ACTIVE' | 'ON_LEAVE';
+}
+
 export interface Exam {
   exam_id: string;
   exam_title: string;
   subject: string;
+  grade_level?: 'Class 12' | 'Class 11' | 'Class 10' | 'Class 9' | 'Class 8';
   total_marks: number;
   institute_id: string;
   date: string;

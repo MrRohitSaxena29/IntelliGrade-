@@ -17,6 +17,8 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
   const [academicYear, setAcademicYear] = useState('2026-2027');
 
+  const [gradeLevel, setGradeLevel] = useState<'Class 12' | 'Class 11' | 'Class 10' | 'Class 9' | 'Class 8'>('Class 12');
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,6 +29,7 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
       exam_id: `exam-${Date.now()}`,
       exam_title: title,
       subject,
+      grade_level: gradeLevel,
       total_marks: Number(totalMarks),
       institute_id: currentInstitute.institute_id,
       date,
@@ -38,6 +41,8 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
     onClose();
   };
 
+  const isPCMGrade = gradeLevel === 'Class 12' || gradeLevel === 'Class 11';
+
   return (
     <div className="modal-overlay">
       <div className="modal-content" style={{ maxWidth: 560 }}>
@@ -45,7 +50,7 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <BookOpen size={20} color="var(--primary)" />
             <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              Create New Academic Exam
+              Create Examination • Squared Classes
             </span>
           </div>
           <button
@@ -57,6 +62,30 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
         </div>
 
         <form onSubmit={handleSubmit} style={{ padding: '24px' }}>
+          {/* Grade Level Selection */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+              Target Grade / Class
+            </label>
+            <select
+              className="form-select"
+              value={gradeLevel}
+              onChange={(e) => setGradeLevel(e.target.value as any)}
+              style={{ width: '100%' }}
+            >
+              <option value="Class 12">Class 12 (PCM Only: Physics, Chemistry, Mathematics)</option>
+              <option value="Class 11">Class 11 (PCM Only: Physics, Chemistry, Mathematics)</option>
+              <option value="Class 10">Class 10 (All Core Subjects)</option>
+              <option value="Class 9">Class 9 (All Core Subjects)</option>
+              <option value="Class 8">Class 8 (All Core Subjects)</option>
+            </select>
+            {isPCMGrade && (
+              <div style={{ fontSize: '0.72rem', color: '#38bdf8', marginTop: 4 }}>
+                ℹ️ Squared Classes curriculum for {gradeLevel} is dedicated exclusively to Physics, Chemistry & Mathematics.
+              </div>
+            )}
+          </div>
+
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
               Exam Title
@@ -64,7 +93,7 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. Class XII Physics Pre-Board Examination"
+              placeholder={isPCMGrade ? "e.g. Class XII Physics Pre-Board Simulation" : "e.g. Class X Mathematics Term 1"}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -74,12 +103,12 @@ export const ExamCreateModal: React.FC<ExamCreateModalProps> = ({ isOpen, onClos
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
-                Subject / Discipline
+                Subject / Discipline {isPCMGrade && '(PCM)'}
               </label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="e.g. Physics"
+                placeholder={isPCMGrade ? "Physics / Chemistry / Math" : "Science / Math / Social / English"}
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 required

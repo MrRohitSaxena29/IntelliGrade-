@@ -2,21 +2,27 @@ import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
-import { DashboardView } from './components/dashboard/DashboardView';
+import { TeacherDashboard } from './components/dashboard/TeacherDashboard';
+import { AdminDashboard } from './components/dashboard/AdminDashboard';
 import { ExamList } from './components/academic/ExamList';
 import { BatchUploadZone } from './components/ingestion/BatchUploadZone';
 import { EvaluationStudio } from './components/evaluation/EvaluationStudio';
 import { ScorecardPreview } from './components/reports/ScorecardPreview';
 import { WhatsAppTracker } from './components/distribution/WhatsAppTracker';
 import { AuditLogsTable } from './components/audit/AuditLogsTable';
+import { LoginView } from './components/auth/LoginView';
 
 const MainContent: React.FC = () => {
-  const { activeTab } = useApp();
+  const { activeTab, isAuthenticated, currentUser } = useApp();
+
+  if (!isAuthenticated) {
+    return <LoginView />;
+  }
 
   const renderTab = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardView />;
+        return currentUser.role_enum === 'ADMIN' ? <AdminDashboard /> : <TeacherDashboard />;
       case 'academic':
         return <ExamList />;
       case 'ingestion':
@@ -30,7 +36,7 @@ const MainContent: React.FC = () => {
       case 'audit':
         return <AuditLogsTable />;
       default:
-        return <DashboardView />;
+        return currentUser.role_enum === 'ADMIN' ? <AdminDashboard /> : <TeacherDashboard />;
     }
   };
 

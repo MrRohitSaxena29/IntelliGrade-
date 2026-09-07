@@ -10,28 +10,23 @@ import {
   History,
   GraduationCap,
   Sparkles,
+  Shield,
+  Users,
+  LogOut,
+  Layers,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { activeTab, setActiveTab, results } = useApp();
+  const { activeTab, setActiveTab, results, currentUser, logout } = useApp();
 
   const pendingReviewCount = results.filter((r) => r.status === 'AI_GRADED').length;
+  const isAdmin = currentUser.role_enum === 'ADMIN';
 
-  const navItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: number }[] = [
+  const teacherNavItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: number }[] = [
     {
       id: 'dashboard',
-      label: 'Dashboard Overview',
+      label: 'Faculty Dashboard',
       icon: <LayoutDashboard size={18} />,
-    },
-    {
-      id: 'academic',
-      label: 'Exams & Rubrics',
-      icon: <BookOpen size={18} />,
-    },
-    {
-      id: 'ingestion',
-      label: 'Batch Ingestion & OCR',
-      icon: <UploadCloud size={18} />,
     },
     {
       id: 'evaluation',
@@ -40,8 +35,18 @@ export const Sidebar: React.FC = () => {
       badge: pendingReviewCount,
     },
     {
+      id: 'academic',
+      label: 'Class 8–12 Rubrics',
+      icon: <BookOpen size={18} />,
+    },
+    {
+      id: 'ingestion',
+      label: 'Upload Scan Batches',
+      icon: <UploadCloud size={18} />,
+    },
+    {
       id: 'reports',
-      label: 'Branded Scorecards',
+      label: 'Parent Scorecards',
       icon: <Award size={18} />,
     },
     {
@@ -51,14 +56,55 @@ export const Sidebar: React.FC = () => {
     },
     {
       id: 'audit',
-      label: 'Audit Trail & Logs',
+      label: 'My Calibration Logs',
       icon: <History size={18} />,
     },
   ];
 
+  const adminNavItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: number }[] = [
+    {
+      id: 'dashboard',
+      label: 'Admin Command Center',
+      icon: <Shield size={18} />,
+    },
+    {
+      id: 'academic',
+      label: 'Class 8–12 Curriculum',
+      icon: <BookOpen size={18} />,
+    },
+    {
+      id: 'ingestion',
+      label: 'Batch Pipeline Ingestion',
+      icon: <UploadCloud size={18} />,
+    },
+    {
+      id: 'evaluation',
+      label: 'Inspection Studio',
+      icon: <FileCheck2 size={18} />,
+      badge: pendingReviewCount,
+    },
+    {
+      id: 'reports',
+      label: 'Scorecard Repository',
+      icon: <Award size={18} />,
+    },
+    {
+      id: 'whatsapp',
+      label: 'Parent WhatsApp Gateway',
+      icon: <MessageSquareShare size={18} />,
+    },
+    {
+      id: 'audit',
+      label: 'Global Compliance Trail',
+      icon: <History size={18} />,
+    },
+  ];
+
+  const currentNav = isAdmin ? adminNavItems : teacherNavItems;
+
   return (
     <aside className="app-sidebar">
-      {/* Brand Header */}
+      {/* Squared Classes Brand Header */}
       <div
         style={{
           padding: '24px 20px',
@@ -73,7 +119,9 @@ export const Sidebar: React.FC = () => {
             width: 40,
             height: 40,
             borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            background: isAdmin
+              ? 'linear-gradient(135deg, #0284c7 0%, #06b6d4 100%)'
+              : 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -81,14 +129,14 @@ export const Sidebar: React.FC = () => {
             boxShadow: '0 0 16px rgba(99, 102, 241, 0.4)',
           }}
         >
-          <GraduationCap size={24} />
+          {isAdmin ? <Shield size={22} /> : <GraduationCap size={24} />}
         </div>
         <div>
           <div style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff' }}>
-            Intelli<span style={{ color: 'var(--secondary)' }}>Grade</span>
+            Squared <span style={{ color: 'var(--secondary)' }}>Classes</span>
           </div>
-          <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            AI Evaluation v2.4
+          <div style={{ fontSize: '0.68rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {isAdmin ? 'Admin Portal' : 'Faculty Workspace'}
           </div>
         </div>
       </div>
@@ -96,10 +144,10 @@ export const Sidebar: React.FC = () => {
       {/* Navigation List */}
       <div style={{ padding: '20px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
         <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0 8px 6px' }}>
-          Platform Modules
+          {isAdmin ? 'Administration Modules' : 'Evaluation Modules'}
         </div>
 
-        {navItems.map((item) => {
+        {currentNav.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button
@@ -112,7 +160,11 @@ export const Sidebar: React.FC = () => {
                 padding: '10px 14px',
                 borderRadius: 'var(--radius-sm)',
                 border: '1px solid transparent',
-                background: isActive ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%)' : 'transparent',
+                background: isActive
+                  ? isAdmin
+                    ? 'linear-gradient(90deg, rgba(6, 182, 212, 0.2) 0%, rgba(6, 182, 212, 0.05) 100%)'
+                    : 'linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%)'
+                  : 'transparent',
                 borderColor: isActive ? 'var(--border-focus)' : 'transparent',
                 color: isActive ? '#fff' : 'var(--text-muted)',
                 fontWeight: isActive ? 600 : 500,
@@ -150,25 +202,47 @@ export const Sidebar: React.FC = () => {
         })}
       </div>
 
-      {/* AI Assistant Banner */}
+      {/* Curriculum Scope Card */}
       <div style={{ padding: '16px', borderTop: '1px solid var(--border-subtle)' }}>
         <div
           className="glass-panel"
           style={{
             padding: '12px',
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)',
-            border: '1px solid rgba(99, 102, 241, 0.25)',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <Sparkles size={16} color="var(--secondary)" />
+            <Sparkles size={15} color="var(--secondary)" />
             <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              LLM Rubric Engine
+              Classes 8 to 12 Scope
             </span>
           </div>
-          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-            Evaluating handwriting scans against strict marks rubrics with 98.4% OCR precision.
+          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.4, margin: '0 0 8px' }}>
+            Classes 11–12 PCM (JEE & Boards) • Classes 8–10 All Core Subjects.
           </p>
+          <button
+            onClick={() => logout()}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              color: '#f87171',
+              padding: '6px 10px',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <LogOut size={13} />
+            <span>Sign Out</span>
+          </button>
         </div>
       </div>
     </aside>
